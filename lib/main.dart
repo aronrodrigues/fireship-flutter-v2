@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import "dart:math";
 
 void main() {
   runApp(const MyApp());
@@ -28,10 +29,10 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.purple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Fireship Flutter V2'),
     );
   }
 }
@@ -112,6 +113,8 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
+            MyWidget(),
+            FlexWidget(),
           ],
         ),
       ),
@@ -120,6 +123,128 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+      bottomNavigationBar: BottomNavigationBar(items: const [
+        BottomNavigationBarItem(
+            icon: Icon(Icons.home), label: 'Home', backgroundColor: Colors.red),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Search',
+            backgroundColor: Colors.green),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+            backgroundColor: Colors.blue),
+      ]),
+      drawer: Drawer(child: MyMenu()),
+    );
+  }
+}
+
+class MyWidget extends StatelessWidget {
+  const MyWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
+      height: 100,
+      width: 100,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text('Hello, World!'),
+    );
+  }
+}
+
+class FlexWidget extends StatelessWidget {
+  const FlexWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                color: Colors.deepPurple,
+                width: 100,
+                height: 100,
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Icon(Icons.backpack),
+                ),
+              ),
+              Stack(children: [
+                Container(
+                  color: Colors.red,
+                  width: 50,
+                  height: 50,
+                ),
+                Positioned(top: 15, left: 15, child: Icon(Icons.leaderboard))
+              ])
+            ]),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [Expanded(child: Icon(Icons.star)), Icon(Icons.person)],
+        )
+      ],
+    );
+  }
+}
+
+class MyMenu extends StatefulWidget {
+  const MyMenu({super.key});
+
+  @override
+  State<MyMenu> createState() => _MyMenuState();
+}
+
+class _MyMenuState extends State<MyMenu> {
+  int count = 0;
+  String text = 'Hello, World!';
+  randomColor() {
+    return Color.fromARGB(255, Random().nextInt(255), Random().nextInt(255),
+        Random().nextInt(255));
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemBuilder: (context, index) {
+        return ListTile(
+          tileColor: randomColor(),
+          leading: Icon(Icons.star),
+          minTileHeight: 100,
+          onTap: () {
+            setState(() {
+              count += 1;
+              text = 'Color $index';
+            });
+            // Navigator.of(context).pop();
+          },
+          title: Text('Color $index $count'),
+        );
+      },
     );
   }
 }
