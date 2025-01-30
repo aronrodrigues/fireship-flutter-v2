@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import "dart:math";
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import "package:provider/provider.dart";
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -146,16 +153,15 @@ class MyWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(10),
-      padding: const EdgeInsets.all(10),
-      height: 100,
-      width: 100,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Text('Hello, World!'),
-    );
+        margin: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
+        height: 100,
+        width: 100,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primary,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: StreamWidget());
   }
 }
 
@@ -165,6 +171,7 @@ class FlexWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      // FutureBuilder, StreamBuilder
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -176,10 +183,8 @@ class FlexWidget extends StatelessWidget {
                 color: Colors.deepPurple,
                 width: 100,
                 height: 100,
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Icon(Icons.backpack),
-                ),
+                child:
+                    Align(alignment: Alignment.center, child: FutureWidget()),
               ),
               Stack(children: [
                 Container(
@@ -246,5 +251,87 @@ class _MyMenuState extends State<MyMenu> {
         );
       },
     );
+  }
+}
+
+class FutureWidget extends StatelessWidget {
+  const FutureWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: Future.delayed(Duration(seconds: 3), () => 'Please wait'),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        }
+        return ProviderWidget();
+      },
+    );
+  }
+}
+
+class StreamWidget extends StatelessWidget {
+  const StreamWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: Stream.periodic(Duration(seconds: 1), (x) => x),
+      builder: (context, snapshot) {
+        return Text(snapshot.data.toString());
+      },
+    );
+  }
+}
+
+class CounterState extends ChangeNotifier {
+  int _count = 0;
+  int get count => _count;
+
+  void increment() {
+    _count++;
+    notifyListeners();
+  }
+}
+
+class ProviderWidget extends StatelessWidget {
+  const ProviderWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => CounterState(),
+      child: Column(
+        children: [CountText()],
+      ),
+    );
+  }
+}
+
+class CountText extends StatelessWidget {
+  const CountText({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    var watchCounterState = context.watch<CounterState>();
+    var providerCounterState = Provider.of<CounterState>(context);
+    /*
+    return Consumer<CounterState>(
+      builder: (context, counterState, child) {
+        return Text(
+            "parameter: ${counterState.count.toString()}, watch: ${watchCounterState.count.toString()}, provider: ${providerCounterState.count.toString()}");
+      },
+    );*/
+    return Column(children: [
+      Text(
+          "parameter: ${providerCounterState.count.toString()}, watch: ${watchCounterState.count.toString()}"),
+      ElevatedButton(
+        onPressed: () {
+          context.read<CounterState>().increment();
+        },
+        child: Text('Increment'),
+      )
+    ]);
   }
 }
