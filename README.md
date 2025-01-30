@@ -3,6 +3,19 @@
 * https://github.com/fireship-io/flutter-firebase-quizapp-course
 * https://github.com/fireship-io/fireship-quizapp-data
 
+# Reference
+* https://firebase.flutter.dev/
+
+# Important steps
+## Ios
+* Download ```GoogleService-Info.plist``` from Firebase
+* Run ```ios/Runner.xcodeproj```
+* Runner -> AddFile to Runner
+
+## Android
+* ```cd android```
+* ```./gradlew signingReport``` SHA1
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
